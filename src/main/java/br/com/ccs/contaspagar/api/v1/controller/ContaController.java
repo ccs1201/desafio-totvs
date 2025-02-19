@@ -6,6 +6,10 @@ import br.com.ccs.contaspagar.api.v1.model.output.ContaOutput;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.service.ContaService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,14 +32,15 @@ class ContaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContaOutput criarConta(@RequestBody ContaInput contaInput) {
+
+    public ContaOutput criarConta(@RequestBody @Valid ContaInput contaInput) {
         return ContaOutput.fromEntity(contaService.salvar(contaInput.toEntity()));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<ContaOutput> listarContas(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "5") int size,
+    public Page<ContaOutput> listarContas(@RequestParam(defaultValue = "0") @PositiveOrZero int page,
+                                          @RequestParam(defaultValue = "5") @Positive int size,
                                           @RequestParam(defaultValue = "dataVencimento") String sort,
                                           @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
         return ContaOutput
@@ -47,13 +52,13 @@ class ContaController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContaOutput buscarConta(@PathVariable UUID id) {
+    public ContaOutput buscarConta(@PathVariable @NotNull UUID id) {
         return ContaOutput.fromEntity(contaService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContaOutput atualizarConta(@PathVariable UUID id, @RequestBody ContaInput contaInput) {
+    public ContaOutput atualizarConta(@PathVariable UUID id, @RequestBody @Valid ContaInput contaInput) {
         Conta conta = contaInput.toEntity();
         conta.setId(id);
         return ContaOutput.fromEntity(contaService.salvar(conta));
@@ -61,13 +66,13 @@ class ContaController {
 
     @PatchMapping("/{id}/pagamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void pagarConta(@PathVariable UUID id, @RequestParam LocalDate dataPagamento) {
+    public void pagarConta(@PathVariable UUID id, @RequestParam @NotNull LocalDate dataPagamento) {
         contaService.pagar(id, dataPagamento);
     }
 
     @PatchMapping("/{id}/cancelamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void cancelarConta(@PathVariable UUID id) {
+    public void cancelarConta(@PathVariable @NotNull UUID id) {
         contaService.cancelar(id);
     }
 
@@ -75,8 +80,8 @@ class ContaController {
     @Operation(summary = "Obter contas por Data de Vencimento e/ou Descrição")
     @GetMapping("/filtro")
     @ResponseStatus(HttpStatus.OK)
-    public Page<ContaOutput> filtro(@RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "5") int size,
+    public Page<ContaOutput> filtro(@RequestParam(defaultValue = "0") @PositiveOrZero int page,
+                                    @RequestParam(defaultValue = "5") @Positive int size,
                                     @RequestParam(defaultValue = "dataVencimento") String sort,
                                     @RequestParam(defaultValue = "ASC") Sort.Direction direction,
                                     @RequestParam(required = false) LocalDate dataVencimento,
@@ -90,13 +95,13 @@ class ContaController {
     @Operation(summary = "Obter valor total pago num determinado período")
     @GetMapping("/totalPago")
     @ResponseStatus(HttpStatus.OK)
-    public BigDecimal obterValorTotalPago(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+    public BigDecimal obterValorTotalPago(@RequestParam @NotNull LocalDate dataInicio, @RequestParam @NotNull LocalDate dataFim) {
         return contaService.totalPago(dataInicio, dataFim);
     }
 
     @Operation(summary = "Importar contas a partir de um arquivo CSV")
     @PostMapping("/importacsv")
-    public void importarContas(CsvInput csvInput) {
+    public void importarContas(@Valid CsvInput csvInput) {
         contaService.importarContasCsv(csvInput);
     }
 }
