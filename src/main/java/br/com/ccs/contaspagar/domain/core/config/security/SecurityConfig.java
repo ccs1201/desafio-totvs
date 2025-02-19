@@ -30,6 +30,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        //todo usar jwt
         return NoOpPasswordEncoder.getInstance(); // For testing only, use BCrypt in production
     }
 }

@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 public class ContaCsvReader {
 
     public List<Conta> readCsv(MultipartFile file) {
+
+        if (file.isEmpty()) {
+            throw new ContasPagarException("O arquivo está vazio.");
+        }
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             AtomicInteger lineNumber = new AtomicInteger(0);
@@ -52,6 +57,7 @@ public class ContaCsvReader {
                     .descricao(fields[3].trim())
                     .situacao(parseSituacao(fields[4], lineNumber))
                     .build();
+
         } catch (Exception e) {
             throw new ContasPagarException(
                     String.format("Erro ao processar linha %d: %s", lineNumber, e.getMessage()), e);
