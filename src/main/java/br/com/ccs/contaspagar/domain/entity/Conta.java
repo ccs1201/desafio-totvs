@@ -2,13 +2,14 @@ package br.com.ccs.contaspagar.domain.entity;
 
 import br.com.ccs.contaspagar.domain.vo.Situacao;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "conta_pagar")
@@ -16,12 +17,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ContaPagar {
+@Builder
+public class Conta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include
-    private Long id;
+    private UUID id;
 
     @Column(name = "data_vencimento", nullable = false)
     private LocalDate dataVencimento;
@@ -29,7 +31,10 @@ public class ContaPagar {
     @Column(name = "data_pagamento")
     private LocalDate dataPagamento;
 
-    @Column(nullable = false)
+    @Column(name = "data_baixa")
+    private OffsetDateTime dataBaixa;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
     @Column(nullable = false)
@@ -38,4 +43,23 @@ public class ContaPagar {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Situacao situacao;
+
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    @CreationTimestamp
+    private OffsetDateTime dataCriacao;
+
+    @Column(name = "data_atualizacao", nullable = false)
+    @UpdateTimestamp
+    private OffsetDateTime dataAtualizacao;
+
+    public void pagar(LocalDate dataPagamento) {
+        this.situacao = Situacao.PAGA;
+        this.dataPagamento = dataPagamento;
+        this.dataBaixa = OffsetDateTime.now();
+    }
+
+    public void cancelar() {
+        this.situacao = Situacao.CANCELADA;
+        this.dataBaixa = OffsetDateTime.now();
+    }
 }

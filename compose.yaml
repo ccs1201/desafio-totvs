@@ -1,9 +1,23 @@
+version: '3.9'
+name: 'postgres_db'
+
 services:
+  #Data Base
   postgres:
-    image: 'postgres:latest'
+    image: postgres:latest
+    restart: no
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - POSTGRES_DB=desafio_totvs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    network_mode: host
     ports:
-      - '5432'
+      - 5432:5432
+    volumes:
+      - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+    command: 'postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf'
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1GB'
