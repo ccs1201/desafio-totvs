@@ -6,6 +6,7 @@ import br.com.ccs.contaspagar.api.v1.model.output.ContaOutput;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.service.ContaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -21,12 +22,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value = "/v1/contas", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Contas a Pagar", description = "API para controle de contas a pagar")
 class ContaController {
     private final ContaService contaService;
 
@@ -100,8 +104,9 @@ class ContaController {
     }
 
     @Operation(summary = "Importar contas a partir de um arquivo CSV")
-    @PostMapping("/importacsv")
-    public void importarContas(@Valid CsvInput csvInput) {
-        contaService.importarContasCsv(csvInput);
+    @PostMapping("/importacaocsv")
+    public CompletableFuture<List<ContaOutput>> importarContas(@Valid CsvInput csvInput) {
+        return CompletableFuture.supplyAsync(() -> contaService.importarContasCsv(csvInput))
+                .thenApply(ContaOutput::fromEntityList);
     }
 }

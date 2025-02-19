@@ -65,4 +65,8 @@ public class Conta {
         this.situacao = Situacao.CANCELADA;
         this.dataBaixa = OffsetDateTime.now();
     }
+
+    public boolean isPaga() {
+        return Situacao.PAGA.equals(this.getSituacao());
+    }
 }

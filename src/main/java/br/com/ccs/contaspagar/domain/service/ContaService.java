@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.UUID;
 
 public interface ContaService {
@@ -32,5 +33,5 @@ public interface ContaService {
     BigDecimal totalPago(LocalDate dataInicio, LocalDate dataFim);
 
     @Transactional
-    void importarContasCsv(CsvInput csvInput);
+    Collection<Conta> importarContasCsv(CsvInput csvInput);
 }

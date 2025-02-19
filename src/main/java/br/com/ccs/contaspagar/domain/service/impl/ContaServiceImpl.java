@@ -6,6 +6,7 @@ import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.repository.ContaRepository;
 import br.com.ccs.contaspagar.domain.service.ContaService;
 import br.com.ccs.contaspagar.domain.util.ContaCsvReader;
+import br.com.ccs.contaspagar.domain.vo.Situacao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.UUID;
 
 @Service
@@ -48,6 +50,11 @@ public class ContaServiceImpl implements ContaService {
     @Override
     public void pagar(UUID id, LocalDate dataPagamento) {
         var conta = findById(id);
+
+        if (conta.getSituacao() == Situacao.PAGA) {
+            throw new ContasPagarServiceException("Conta já esta paga.");
+        }
+
         conta.pagar(dataPagamento);
         save(conta);
     }
@@ -56,6 +63,9 @@ public class ContaServiceImpl implements ContaService {
     @Override
     public void cancelar(UUID id) {
         var conta = findById(id);
+        if (conta.getSituacao() == Situacao.PAGA) {
+            throw new ContasPagarServiceException("Conta já esta paga e não pode ser cancelada.");
+        }
         conta.cancelar();
         save(conta);
     }
@@ -85,9 +95,8 @@ public class ContaServiceImpl implements ContaService {
 
     @Transactional
     @Override
-    public void importarContasCsv(CsvInput csvInput) {
-        contaRepository.saveAll(ContaCsvReader.readCsv(csvInput));
-
+    public Collection<Conta> importarContasCsv(CsvInput csvInput) {
+        return contaRepository.saveAll(ContaCsvReader.readCsv(csvInput));
     }
 
     private Conta findById(UUID id) {
