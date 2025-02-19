@@ -52,6 +52,9 @@ public class Conta {
     @UpdateTimestamp
     private OffsetDateTime dataAtualizacao;
 
+    @Column(name = "importada_via_csv", nullable = false)
+    private boolean importadaViaCsv = false;
+
     public void pagar(LocalDate dataPagamento) {
         this.situacao = Situacao.PAGA;
         this.dataPagamento = dataPagamento;
