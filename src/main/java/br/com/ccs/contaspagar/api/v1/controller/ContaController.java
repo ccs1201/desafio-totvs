@@ -76,11 +76,11 @@ class ContaController {
     @GetMapping("/filtro")
     @ResponseStatus(HttpStatus.OK)
     public Page<ContaOutput> filtro(@RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "5") int size,
-                                                                 @RequestParam(defaultValue = "dataVencimento") String sort,
-                                                                 @RequestParam(defaultValue = "ASC") Sort.Direction direction,
-                                                                 @RequestParam(required = false) LocalDate dataVencimento,
-                                                                 @RequestParam(required = false) String descricao) {
+                                    @RequestParam(defaultValue = "5") int size,
+                                    @RequestParam(defaultValue = "dataVencimento") String sort,
+                                    @RequestParam(defaultValue = "ASC") Sort.Direction direction,
+                                    @RequestParam(required = false) LocalDate dataVencimento,
+                                    @RequestParam(required = false) String descricao) {
         return ContaOutput
                 .fromPage(contaService
                         .findByVencimentoEDescricao(dataVencimento, descricao, PageRequest
