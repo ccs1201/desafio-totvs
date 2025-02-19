@@ -29,9 +29,7 @@ class ContaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ContaOutput criarConta(@RequestBody ContaInput contaInput) {
-        Conta conta = contaInput.toEntity();
-        Conta saved = contaService.salvar(conta);
-        return ContaOutput.fromEntity(saved);
+        return ContaOutput.fromEntity(contaService.salvar(contaInput.toEntity()));
     }
 
     @GetMapping
@@ -61,13 +59,13 @@ class ContaController {
         return ContaOutput.fromEntity(contaService.salvar(conta));
     }
 
-    @PatchMapping("/{id}/paga/{data_pagamento}")
+    @PatchMapping("/{id}/pagamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void pagarConta(@PathVariable UUID id, @PathVariable LocalDate data_pagamento) {
-        contaService.pagar(id, data_pagamento);
+    public void pagarConta(@PathVariable UUID id, @RequestParam LocalDate dataPagamento) {
+        contaService.pagar(id, dataPagamento);
     }
 
-    @PatchMapping("/{id}/cancela")
+    @PatchMapping("/{id}/cancelamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelarConta(@PathVariable UUID id) {
         contaService.cancelar(id);
@@ -75,17 +73,17 @@ class ContaController {
 
 
     @Operation(summary = "Obter contas por Data de Vencimento e/ou Descrição")
-    @GetMapping("/filtra")
+    @GetMapping("/filtro")
     @ResponseStatus(HttpStatus.OK)
-    public Page<ContaOutput> listarContasPorFiltro(@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "5") int size,
-                                                   @RequestParam(defaultValue = "dataVencimento") String sort,
-                                                   @RequestParam(defaultValue = "ASC") Sort.Direction direction,
-                                                   @RequestParam(required = false) LocalDate dataVencimento,
-                                                   @RequestParam(required = false) String descricao) {
+    public Page<ContaOutput> filtro(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "5") int size,
+                                                                 @RequestParam(defaultValue = "dataVencimento") String sort,
+                                                                 @RequestParam(defaultValue = "ASC") Sort.Direction direction,
+                                                                 @RequestParam(required = false) LocalDate dataVencimento,
+                                                                 @RequestParam(required = false) String descricao) {
         return ContaOutput
                 .fromPage(contaService
-                        .fintrar(dataVencimento, descricao, PageRequest
+                        .findByVencimentoEDescricao(dataVencimento, descricao, PageRequest
                                 .of(page, size, direction, sort)));
     }
 

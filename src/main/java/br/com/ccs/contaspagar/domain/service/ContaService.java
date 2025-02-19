@@ -47,9 +47,9 @@ public class ContaService {
     }
 
     @Transactional
-    public void pagar(UUID id, LocalDate data_pagamento) {
+    public void pagar(UUID id, LocalDate dataPagamento) {
         Conta conta = buscarPorId(id);
-        conta.pagar(data_pagamento);
+        conta.pagar(dataPagamento);
         salvar(conta);
     }
 
@@ -61,7 +61,7 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Conta> fintrar(LocalDate dataVencimento, String descricao, PageRequest pageRequest) {
+    public Page<Conta> findByVencimentoEDescricao(LocalDate dataVencimento, String descricao, PageRequest pageRequest) {
         if (dataVencimento != null && descricao != null) {
             return contaRepository.findByDataVencimentoAndDescricaoContainingIgnoreCase(dataVencimento, descricao, pageRequest);
         }
