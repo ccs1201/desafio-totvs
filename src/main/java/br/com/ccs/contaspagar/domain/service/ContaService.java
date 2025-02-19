@@ -48,14 +48,14 @@ public class ContaService {
 
     @Transactional
     public void pagar(UUID id, LocalDate dataPagamento) {
-        Conta conta = buscarPorId(id);
+        var conta = buscarPorId(id);
         conta.pagar(dataPagamento);
         salvar(conta);
     }
 
     @Transactional
     public void cancelar(UUID id) {
-        Conta conta = buscarPorId(id);
+        var conta = buscarPorId(id);
         conta.cancelar();
         salvar(conta);
     }
@@ -83,10 +83,7 @@ public class ContaService {
 
     @Transactional
     public void importarContasCsv(CsvInput csvInput) {
-        try {
-            contaRepository.saveAll(ContaCsvReader.readCsv(csvInput.multipartFile()));
-        } catch (Exception e) {
-            throw new ContasPagarServiceException("Erro ao importar contas", e);
-        }
+        contaRepository.saveAll(ContaCsvReader.readCsv(csvInput));
+
     }
 }
