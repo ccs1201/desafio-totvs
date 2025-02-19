@@ -74,6 +74,7 @@ class ContaController {
     }
 
 
+    @Operation(summary = "Obter contas por Data de Vencimento e/ou Descrição")
     @GetMapping("/filtra")
     @ResponseStatus(HttpStatus.OK)
     public Page<ContaOutput> listarContasPorFiltro(@RequestParam(defaultValue = "0") int page,
