@@ -14,14 +14,14 @@ public record ContaInput(@FutureOrPresent @NotNull LocalDate dataVencimento,
                          LocalDate dataPagamento,
                          @Positive @NotNull BigDecimal valor,
                          @NotBlank String descricao,
-                         @NotNull Situacao situacao) {
+                         @NotBlank String situacao) {
     public Conta toEntity() {
         return Conta.builder()
                 .dataVencimento(dataVencimento)
                 .dataPagamento(dataPagamento)
                 .valor(valor)
                 .descricao(descricao)
-                .situacao(situacao)
+                .situacao(Situacao.valueOf(situacao.toUpperCase()))
                 .build();
     }
 }

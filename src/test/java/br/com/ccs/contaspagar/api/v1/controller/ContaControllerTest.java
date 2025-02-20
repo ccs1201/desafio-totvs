@@ -38,7 +38,7 @@ class ContaControllerTest {
 
     private static ContaInput getContaInput() {
         return new
-                ContaInput(LocalDate.now().plusDays(1), null, BigDecimal.TEN, "teste", Situacao.PENDENTE);
+                ContaInput(LocalDate.now().plusDays(1), null, BigDecimal.TEN, "teste", "PENDENTE");
     }
 
     private static Conta getConta() {

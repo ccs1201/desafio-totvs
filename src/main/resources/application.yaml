@@ -69,10 +69,3 @@ springdoc:
 server:
   error:
     include-stacktrace: never
-
-# Commented properties
-#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-#springdoc.model-converters.pageable-converter.enabled=true
-#logging.level.org.hibernate.stat=debug
-#logging.level.sql=debug
-#logging.level.root=info
