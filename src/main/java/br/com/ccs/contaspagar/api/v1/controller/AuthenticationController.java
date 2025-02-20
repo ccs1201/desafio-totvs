@@ -22,9 +22,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public String login(@RequestBody @Valid AuthenticationInput input) {
-
         return authenticationService.authenticate(input.login(), input.password());
-
     }
 
     @PostMapping("/cadastro")
