@@ -1,6 +1,6 @@
 package br.com.ccs.contaspagar.infra.exception;
 
-import br.com.ccs.contaspagar.infra.exception.model.ProblemaDetailResponse;
+import br.com.ccs.contaspagar.infra.exception.model.ProblemDetailResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +23,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(ContasPagarException.class)
-    public ResponseEntity<ProblemaDetailResponse> handleContasPagarServiceException(ContasPagarException ex) {
+    public ResponseEntity<ProblemDetailResponse> handleContasPagarServiceException(ContasPagarException ex) {
         var status = ex.getStatus() != null ? ex.getStatus() : HttpStatus.BAD_REQUEST;
         var msg = ex.getMessage() != null ? ex.getMessage() : "Erro ao processar requisição.";
 
@@ -32,7 +32,7 @@ public class CustomExceptionHandler {
             msg = msg.concat(" - ").concat(root.getMessage().substring(root.getMessage().indexOf("Detail")));
         }
 
-        return ResponseEntity.status(status).body(ProblemaDetailResponse.builder()
+        return ResponseEntity.status(status).body(ProblemDetailResponse.builder()
                 .status(status.value())
                 .title(status.getReasonPhrase())
                 .detail(msg)
@@ -43,8 +43,8 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ProblemaDetailResponse handleException(MethodArgumentNotValidException e) {
-        return ProblemaDetailResponse
+    public ProblemDetailResponse handleException(MethodArgumentNotValidException e) {
+        return ProblemDetailResponse
                 .builder()
                 .title("Erro de validação")
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -57,8 +57,8 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ProblemaDetailResponse handleException(Exception e) {
-        return ProblemaDetailResponse
+    public ProblemDetailResponse handleException(Exception e) {
+        return ProblemDetailResponse
                 .builder()
                 .title("Erro interno")
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())

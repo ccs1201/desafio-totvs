@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Builder
-public class ProblemaDetailResponse {
+public class ProblemDetailResponse {
 
     @Setter(AccessLevel.PRIVATE)
     @Builder.Default
