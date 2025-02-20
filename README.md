@@ -3,6 +3,12 @@
 ## Visão Geral
 Sistema de gerenciamento de contas a pagar desenvolvido com Java Spring Boot para processamento e validação de pagamentos.
 
+**Para que seja possível acessar a api primeiro cadastre um usuário no edpoint [/auth/cadastro](http://localhost:8080/swagger-ui/index.html#/Autentica%C3%A7%C3%A3o/register) consulte a documentação
+nos links abaixo para conhecer os payloads das requisições.**
+
+***Base de dados é populada pelo arquivo /resources/db.migration/testdata/afterMigrate.sql se não quiser popular
+com dados de teste comente ou remova este arquivo.***
+
 ## Documentação/OpenApi
 - [SwaggerUI](http://localhost:8080/api-doc.html)
 - [OpenAPI](http://localhost:8080/v3/api-docs)
@@ -14,6 +20,9 @@ Sistema de gerenciamento de contas a pagar desenvolvido com Java Spring Boot par
 - Spring Web
 - SpringDocOpenApi
 - Maven
+- PostgreSQL 16.7
+- Flyway
+- Docker
 
 ## Funcionalidades
 - Processamento de pagamentos
@@ -25,7 +34,6 @@ Sistema de gerenciamento de contas a pagar desenvolvido com Java Spring Boot par
 ## Pré-requisitos
 - Java 21 ou superior
 - Maven
-- IDE de sua preferência (IntelliJ IDEA, Eclipse, etc.)
 
 ## Instalação
 1. Clone o repositório:
