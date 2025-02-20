@@ -70,3 +70,6 @@ server:
   error:
     include-stacktrace: never
     include-message: always
+
+jwt:
+  secret: X8p3rQ6!mZy$2@dJ#Lw9N^kV&bT1Fg5C

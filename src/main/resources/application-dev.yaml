@@ -38,19 +38,12 @@ spring:
       connection-timeout: 5000
       data-source-properties:
         reWriteBatchedInserts: true
+  main:
+    banner-mode: "off"
   flyway:
     enabled: true
     create-schemas: true
     default-schema: contaspagar
-  security:
-    user:
-      name: root
-      password: root
-      roles:
-        - ADMIN
-        - USER
-  main:
-    banner-mode: "off"
   jackson:
     date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: GMT-3

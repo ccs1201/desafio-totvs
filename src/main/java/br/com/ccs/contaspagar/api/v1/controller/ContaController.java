@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value = "/v1/contas", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,7 +37,7 @@ class ContaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ContaOutput criarConta(@RequestBody @Valid ContaInput contaInput) {
-        return ContaOutput.fromEntity(contaService.salvar(contaInput.toEntity()));
+        return ContaOutput.fromEntity(contaService.salvar(contaInput.toConta()));
     }
 
     @Operation(summary = "Listar todas as contas")
@@ -66,7 +65,7 @@ class ContaController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContaOutput atualizarConta(@PathVariable UUID id, @RequestBody @Valid ContaInput contaInput) {
-        Conta conta = contaInput.toEntity();
+        Conta conta = contaInput.toConta();
         conta.setId(id);
         return ContaOutput.fromEntity(contaService.salvar(conta));
     }
@@ -110,8 +109,8 @@ class ContaController {
 
     @Operation(summary = "Importar contas a partir de um arquivo CSV")
     @PostMapping("/importacaocsv")
-    public CompletableFuture<List<ContaOutput>> importarContas(@Valid CsvInput csvInput) {
-        return CompletableFuture.supplyAsync(() -> contaService.importarContasCsv(csvInput))
-                .thenApply(ContaOutput::fromEntityList);
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<ContaOutput> importarContas(@Valid CsvInput csvInput) {
+        return ContaOutput.fromEntityList(contaService.importarContasCsv(csvInput));
     }
 }

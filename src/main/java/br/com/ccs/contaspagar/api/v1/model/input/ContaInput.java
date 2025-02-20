@@ -15,7 +15,7 @@ public record ContaInput(@FutureOrPresent @NotNull LocalDate dataVencimento,
                          @Positive @NotNull BigDecimal valor,
                          @NotBlank String descricao,
                          @NotBlank String situacao) {
-    public Conta toEntity() {
+    public Conta toConta() {
         return Conta.builder()
                 .dataVencimento(dataVencimento)
                 .dataPagamento(dataPagamento)

@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
@@ -119,9 +118,7 @@ class ContaControllerTest {
         var input = new CsvInput(file);
 
         when(contaService.importarContasCsv(any())).thenReturn(List.of(getConta()));
-        var expected = assertDoesNotThrow(() -> contaController.importarContas(input));
-
-        CompletableFuture.allOf(expected).join();
+        assertDoesNotThrow(() -> contaController.importarContas(input));
 
         verify(contaService, times(1)).importarContasCsv(input);
     }
