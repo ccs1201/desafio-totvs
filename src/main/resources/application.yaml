@@ -23,7 +23,7 @@ spring:
         default_schema: contaspagar
         format_sql: true
     open-in-view: false
-    show-sql: true
+    show-sql: false
   datasource:
     url: jdbc:postgresql://postgres-contas-pagar:5432/desafio_totvs
     username: postgres
