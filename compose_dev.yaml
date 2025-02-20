@@ -1,9 +1,9 @@
 version: '3.9'
-name: 'contas-pagar'
+name: 'postgres_db'
 
 services:
   #Data Base
-  postgres-contas-pagar:
+  postgres:
     image: postgres:latest
     restart: no
     environment:
@@ -21,18 +21,3 @@ services:
         limits:
           cpus: '1'
           memory: '1GB'
-
-  contas-pagar-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres-contas-pagar
-    networks:
-      - contas-network
-
-networks:
-  contas-network:
-    driver: bridge
