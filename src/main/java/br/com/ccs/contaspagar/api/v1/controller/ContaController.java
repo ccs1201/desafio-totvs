@@ -34,13 +34,14 @@ import java.util.concurrent.CompletableFuture;
 class ContaController {
     private final ContaService contaService;
 
+    @Operation(summary = "Criar uma conta")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-
     public ContaOutput criarConta(@RequestBody @Valid ContaInput contaInput) {
         return ContaOutput.fromEntity(contaService.salvar(contaInput.toEntity()));
     }
 
+    @Operation(summary = "Listar todas as contas")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<ContaOutput> listarContas(@RequestParam(defaultValue = "0") @PositiveOrZero int page,
@@ -54,12 +55,14 @@ class ContaController {
 
     }
 
+    @Operation(summary = "Buscar conta por id")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContaOutput buscarConta(@PathVariable @NotNull UUID id) {
         return ContaOutput.fromEntity(contaService.buscarPorId(id));
     }
 
+    @Operation(summary = "Atualizar conta")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContaOutput atualizarConta(@PathVariable UUID id, @RequestBody @Valid ContaInput contaInput) {
@@ -68,12 +71,14 @@ class ContaController {
         return ContaOutput.fromEntity(contaService.salvar(conta));
     }
 
+    @Operation(summary = "Pagar conta")
     @PatchMapping("/{id}/pagamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void pagarConta(@PathVariable UUID id, @RequestParam @NotNull LocalDate dataPagamento) {
         contaService.pagar(id, dataPagamento);
     }
 
+    @Operation(summary = "Cancelar conta")
     @PatchMapping("/{id}/cancelamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelarConta(@PathVariable @NotNull UUID id) {
