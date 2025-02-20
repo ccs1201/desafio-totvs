@@ -1,4 +1,4 @@
-FROM eclipse-temurin:23-jdk
+FROM eclipse-temurin:23-alpine
 LABEL authors="ccs1201" name="contas-pagar-backend"
 LABEL org.opencontainers.image.authors="https://linkedin.com/in/ccs1201"
 VOLUME /tmp
