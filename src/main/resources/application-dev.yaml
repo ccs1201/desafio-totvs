@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: contas-pagar
+  threads:
+    virtual:
+      enabled: true
+  docker:
+    compose:
+      enabled: true
+      lifecycle-management: start_only
+      file: compose_dev.yaml
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          batch_size: 15
+          batch_versioned_data: true
+        query:
+          plan_cache_max_size: 4096
+        order_inserts: true
+        order_updates: true
+        default_schema: contaspagar
+        format_sql: true
+    open-in-view: false
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/desafio_totvs
+    username: postgres
+    password: postgres
+    hikari:
+      schema: contaspagar
+      maximum-pool-size: 20
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 5000
+      data-source-properties:
+        reWriteBatchedInserts: true
+  flyway:
+    enabled: true
+    create-schemas: true
+    default-schema: contaspagar
+  security:
+    user:
+      name: root
+      password: root
+      roles:
+        - ADMIN
+        - USER
+  main:
+    banner-mode: "off"
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: GMT-3
+
+springdoc:
+  swagger-ui:
+    path: /api-doc.html
+    operationsSorter: alpha
+    disable-swagger-default-url: true
+  enable-spring-security: false
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  writer-with-default-pretty-printer: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+server:
+  error:
+    include-stacktrace: never
+
+# Commented properties
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+#springdoc.model-converters.pageable-converter.enabled=true
+#logging.level.org.hibernate.stat=debug
+#logging.level.sql=debug
+#logging.level.root=info

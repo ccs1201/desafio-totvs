@@ -1,33 +1,38 @@
-version: '3.9'
 name: 'contas-pagar'
 
 services:
   #Data Base
   postgres-contas-pagar:
-    image: postgres:latest
+    image: postgres:16.7
     restart: no
     environment:
       - POSTGRES_DB=desafio_totvs
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    network_mode: host
-    ports:
-      - 5432:5432
     volumes:
       - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
     command: 'postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf'
+    networks:
+      - contas-network
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: '1GB'
 
+#backend
   contas-pagar-backend:
+    image: contas-pagar-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1GB'
     depends_on:
       - postgres-contas-pagar
     networks:
