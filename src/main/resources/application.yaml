@@ -26,8 +26,7 @@ spring:
         default_schema: contaspagar
         format_sql: true
     open-in-view: false
-    show-sql: true
-
+    show-sql: false
   datasource:
     url: jdbc:postgresql://postgres-contas-pagar:5432/desafio_totvs
     username: postgres
@@ -81,7 +80,6 @@ server:
   error:
     include-stacktrace: never
     include-message: always
-
 
 jwt:
   secret: X8p3rQ6!mZy$2@dJ#Lw9N^kV&bT1Fg5C
