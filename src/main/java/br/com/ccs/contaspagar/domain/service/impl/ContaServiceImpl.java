@@ -1,6 +1,7 @@
 package br.com.ccs.contaspagar.domain.service.impl;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
+import br.com.ccs.contaspagar.domain.core.exception.ContasPagarNotFoundException;
 import br.com.ccs.contaspagar.domain.core.exception.ContasPagarServiceException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.repository.ContaRepository;
@@ -18,6 +19,10 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Service
 @RequiredArgsConstructor
 public class ContaServiceImpl implements ContaService {
@@ -32,10 +37,12 @@ public class ContaServiceImpl implements ContaService {
     @Transactional(readOnly = true)
     @Override
     public Page<Conta> listarTodas(PageRequest pageRequest) {
+        pageRequest = checkPageRequest(pageRequest);
+
         var contas = contaRepository.findAll(pageRequest);
 
         if (contas.isEmpty()) {
-            throw new ContasPagarServiceException("Nenhuma conta encontrada.");
+            throw new ContasPagarNotFoundException("Nenhuma conta encontrada.");
         }
         return contas;
     }
@@ -50,6 +57,10 @@ public class ContaServiceImpl implements ContaService {
     @Override
     public void pagar(UUID id, LocalDate dataPagamento) {
         var conta = findById(id);
+
+        if (isNull(dataPagamento)) {
+            throw new ContasPagarServiceException("Data de pagamento não pode ser nula.");
+        }
 
         if (conta.getSituacao() == Situacao.PAGA) {
             throw new ContasPagarServiceException("Conta já esta paga.");
@@ -73,13 +84,16 @@ public class ContaServiceImpl implements ContaService {
     @Transactional(readOnly = true)
     @Override
     public Page<Conta> findByVencimentoEDescricao(LocalDate dataVencimento, String descricao, PageRequest pageRequest) {
-        if (dataVencimento != null && descricao != null) {
+
+        pageRequest = checkPageRequest(pageRequest);
+
+        if (nonNull(dataVencimento) && nonNull(descricao)) {
             return contaRepository.findByDataVencimentoAndDescricaoContainingIgnoreCase(dataVencimento, descricao, pageRequest);
         }
-        if (dataVencimento != null) {
+        if (nonNull(dataVencimento)) {
             return contaRepository.findByDataVencimento(dataVencimento, pageRequest);
         }
-        if (descricao != null) {
+        if (isNotBlank(descricao)) {
             return contaRepository.findByDescricaoContainingIgnoreCase(descricao, pageRequest);
         }
 
@@ -88,9 +102,18 @@ public class ContaServiceImpl implements ContaService {
 
     @Override
     public BigDecimal totalPago(LocalDate dataInicio, LocalDate dataFim) {
+
+        if (isNull(dataInicio) || isNull(dataFim)) {
+            throw new ContasPagarServiceException("Data de início e fim não podem ser nulas.");
+        }
+
+        if (dataInicio.isAfter(dataFim)) {
+            throw new ContasPagarServiceException("Data de início não pode ser maior que a data fim.");
+        }
+
         return contaRepository
                 .totalPago(dataInicio, dataFim)
-                .orElseThrow(() -> new ContasPagarServiceException("Nenhuma conta encontrada para o período informado."));
+                .orElseThrow(() -> new ContasPagarNotFoundException("Nenhuma conta encontrada para o período informado."));
     }
 
     @Transactional
@@ -100,8 +123,11 @@ public class ContaServiceImpl implements ContaService {
     }
 
     private Conta findById(UUID id) {
+        if (isNull(id)) {
+            throw new ContasPagarServiceException("Id não pode ser nulo.");
+        }
         return contaRepository.findById(id).orElseThrow(() ->
-                new ContasPagarServiceException("Conta não encontrada para o id:".concat(id.toString())));
+                new ContasPagarNotFoundException("Conta não encontrada para o id:".concat(id.toString())));
     }
 
     private Conta save(Conta conta) {

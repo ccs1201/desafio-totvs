@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
 
-public interface ContaService {
+public interface ContaService extends Service {
     @Transactional
     Conta salvar(Conta conta);
 
