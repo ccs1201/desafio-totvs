@@ -1,6 +1,6 @@
 package br.com.ccs.contaspagar.domain.vo;
 
-public enum Situacao {
+public enum SituacaoEnum {
     PENDENTE,
     PAGA,
     CANCELADA

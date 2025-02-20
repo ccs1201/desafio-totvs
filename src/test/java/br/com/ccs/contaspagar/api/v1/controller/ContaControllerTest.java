@@ -4,7 +4,7 @@ import br.com.ccs.contaspagar.api.v1.model.input.ContaInput;
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.service.ContaService;
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +37,8 @@ class ContaControllerTest {
 
     private static ContaInput getContaInput() {
         return new
-                ContaInput(LocalDate.now().plusDays(1), null, BigDecimal.TEN, "teste", "PENDENTE");
+                ContaInput(LocalDate.now().plusDays(1), null, BigDecimal.TEN,
+                "teste", SituacaoEnum.PENDENTE);
     }
 
     private static Conta getConta() {
@@ -46,7 +47,7 @@ class ContaControllerTest {
                 .dataPagamento(LocalDate.now().plusDays(1))
                 .valor(BigDecimal.TEN)
                 .descricao("teste")
-                .situacao(Situacao.PENDENTE)
+                .situacao(SituacaoEnum.PENDENTE)
                 .build();
     }
 
@@ -55,9 +56,9 @@ class ContaControllerTest {
     }
 
     @Test
-    void criarConta() {
+    void cadastrarConta() {
         when(contaService.salvar(any(Conta.class))).thenReturn(getConta());
-        assertDoesNotThrow(() -> contaController.criarConta(getContaInput()));
+        assertDoesNotThrow(() -> contaController.cadastrarConta(getContaInput()));
         verify(contaService, times(1)).salvar(any(Conta.class));
     }
 

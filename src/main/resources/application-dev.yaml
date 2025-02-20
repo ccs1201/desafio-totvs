@@ -64,3 +64,7 @@ springdoc:
 server:
   error:
     include-stacktrace: never
+
+logging:
+  level:
+    root: error

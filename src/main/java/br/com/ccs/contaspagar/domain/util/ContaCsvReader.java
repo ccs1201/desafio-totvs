@@ -3,7 +3,7 @@ package br.com.ccs.contaspagar.domain.util;
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
 import br.com.ccs.contaspagar.infra.exception.CsvReaderException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
 import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
@@ -22,11 +22,11 @@ public class ContaCsvReader {
 
     public List<Conta> readCsv(CsvInput csvInput) {
 
-        if (isNull(csvInput) || isNull(csvInput.multipartFile()) || csvInput.multipartFile().isEmpty()) {
+        if (isNull(csvInput) || isNull(csvInput.file()) || csvInput.file().isEmpty()) {
             throw new CsvReaderException("O arquivo está vazio.");
         }
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(csvInput.multipartFile().getInputStream(), StandardCharsets.UTF_8))) {
+                new InputStreamReader(csvInput.file().getInputStream(), StandardCharsets.UTF_8))) {
 
             AtomicInteger lineNumber = new AtomicInteger(0);
 
@@ -89,9 +89,9 @@ public class ContaCsvReader {
         }
     }
 
-    private Situacao parseSituacao(String situacao, int lineNumber) {
+    private SituacaoEnum parseSituacao(String situacao, int lineNumber) {
         try {
-            return Situacao.valueOf(situacao.trim().toUpperCase());
+            return SituacaoEnum.valueOf(situacao.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new CsvReaderException(
                     String.format("Linha %d: situação inválida: %s", lineNumber, situacao));

@@ -1,7 +1,7 @@
 package br.com.ccs.contaspagar.api.v1.model.output;
 
 import br.com.ccs.contaspagar.domain.entity.Conta;
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public record ContaOutput(UUID id, LocalDate dataVencimento, LocalDate dataPagamento, BigDecimal valor,
                           String descricao,
-                          Situacao situacao,
+                          SituacaoEnum situacaoEnum,
                           OffsetDateTime dataBaixa,
                           OffsetDateTime dataCriacao,
                           OffsetDateTime dataAtualizacao,

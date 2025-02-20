@@ -1,6 +1,6 @@
 package br.com.ccs.contaspagar.domain.entity;
 
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,7 +42,7 @@ public class Conta {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Situacao situacao;
+    private SituacaoEnum situacao;
 
     @Column(name = "data_criacao", nullable = false, updatable = false)
     @CreationTimestamp
@@ -56,17 +56,17 @@ public class Conta {
     private boolean importadaViaCsv = false;
 
     public void pagar(LocalDate dataPagamento) {
-        this.situacao = Situacao.PAGA;
+        this.situacao = SituacaoEnum.PAGA;
         this.dataPagamento = dataPagamento;
         this.dataBaixa = OffsetDateTime.now();
     }
 
     public void cancelar() {
-        this.situacao = Situacao.CANCELADA;
+        this.situacao = SituacaoEnum.CANCELADA;
         this.dataBaixa = OffsetDateTime.now();
     }
 
     public boolean isPaga() {
-        return Situacao.PAGA.equals(this.getSituacao());
+        return SituacaoEnum.PAGA.equals(this.getSituacao());
     }
 }

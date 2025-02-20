@@ -2,18 +2,19 @@ package br.com.ccs.contaspagar.infra.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
 @Getter
 public class ContasPagarException extends RuntimeException {
+    private final HttpStatus status;
 
-    public ContasPagarException(String message) {
+    public ContasPagarException(HttpStatus status, String message) {
         super(message);
+        this.status = status;
     }
 
-    public ContasPagarException(String message, Throwable cause) {
+    public ContasPagarException(HttpStatus status, String message, Throwable cause) {
         super(message, cause);
+        this.status = status;
     }
 
 }

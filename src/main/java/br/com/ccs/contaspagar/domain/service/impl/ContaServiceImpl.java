@@ -1,13 +1,12 @@
 package br.com.ccs.contaspagar.domain.service.impl;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
-import br.com.ccs.contaspagar.infra.exception.ContasPagarNotFoundException;
-import br.com.ccs.contaspagar.infra.exception.ContasPagarServiceException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.repository.ContaRepository;
 import br.com.ccs.contaspagar.domain.service.ContaService;
 import br.com.ccs.contaspagar.domain.util.ContaCsvReader;
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
+import br.com.ccs.contaspagar.infra.exception.ContasPagarException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +21,8 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class ContaServiceImpl implements ContaService {
         var contas = contaRepository.findAll(pageRequest);
 
         if (contas.isEmpty()) {
-            throw new ContasPagarNotFoundException("Nenhuma conta encontrada.");
+            throw new ContasPagarException(NOT_FOUND, "Nenhuma conta encontrada.");
         }
         return contas;
     }
@@ -59,11 +60,11 @@ public class ContaServiceImpl implements ContaService {
         var conta = findById(id);
 
         if (isNull(dataPagamento)) {
-            throw new ContasPagarServiceException("Data de pagamento não pode ser nula.");
+            throw new ContasPagarException(BAD_REQUEST, "Data de pagamento não pode ser nula.");
         }
 
-        if (conta.getSituacao() == Situacao.PAGA) {
-            throw new ContasPagarServiceException("Conta já esta paga.");
+        if (conta.getSituacao() == SituacaoEnum.PAGA) {
+            throw new ContasPagarException(BAD_REQUEST, "Conta já esta paga.");
         }
 
         conta.pagar(dataPagamento);
@@ -74,8 +75,8 @@ public class ContaServiceImpl implements ContaService {
     @Override
     public void cancelar(UUID id) {
         var conta = findById(id);
-        if (conta.getSituacao() == Situacao.PAGA) {
-            throw new ContasPagarServiceException("Conta já esta paga e não pode ser cancelada.");
+        if (conta.getSituacao() == SituacaoEnum.PAGA) {
+            throw new ContasPagarException(BAD_REQUEST, "Conta já esta paga e não pode ser cancelada.");
         }
         conta.cancelar();
         save(conta);
@@ -97,23 +98,23 @@ public class ContaServiceImpl implements ContaService {
             return contaRepository.findByDescricaoContainingIgnoreCase(descricao, pageRequest);
         }
 
-        throw new ContasPagarServiceException("Informe ao menos um dos parâmetros: Data Vencimento ou Descrição ");
+        throw new ContasPagarException(BAD_REQUEST, "Informe ao menos um dos parâmetros: Data Vencimento ou Descrição ");
     }
 
     @Override
     public BigDecimal totalPago(LocalDate dataInicio, LocalDate dataFim) {
 
         if (isNull(dataInicio) || isNull(dataFim)) {
-            throw new ContasPagarServiceException("Data de início e fim não podem ser nulas.");
+            throw new ContasPagarException(BAD_REQUEST, "Data de início e fim não podem ser nulas.");
         }
 
         if (dataInicio.isAfter(dataFim)) {
-            throw new ContasPagarServiceException("Data de início não pode ser maior que a data fim.");
+            throw new ContasPagarException(BAD_REQUEST, "Data de início não pode ser maior que a data fim.");
         }
 
         return contaRepository
                 .totalPago(dataInicio, dataFim)
-                .orElseThrow(() -> new ContasPagarNotFoundException("Nenhuma conta encontrada para o período informado."));
+                .orElseThrow(() -> new ContasPagarException(NOT_FOUND, "Nenhuma conta encontrada para o período informado."));
     }
 
     @Transactional
@@ -124,17 +125,17 @@ public class ContaServiceImpl implements ContaService {
 
     private Conta findById(UUID id) {
         if (isNull(id)) {
-            throw new ContasPagarServiceException("Id não pode ser nulo.");
+            throw new ContasPagarException(BAD_REQUEST, "Id não pode ser nulo.");
         }
         return contaRepository.findById(id).orElseThrow(() ->
-                new ContasPagarNotFoundException("Conta não encontrada para o id:".concat(id.toString())));
+                new ContasPagarException(NOT_FOUND, "Conta não encontrada para o id:".concat(id.toString())));
     }
 
     private Conta save(Conta conta) {
         try {
             return contaRepository.save(conta);
         } catch (Exception e) {
-            throw new ContasPagarServiceException("Erro ao salvar conta: "
+            throw new ContasPagarException(BAD_REQUEST, "Erro ao salvar conta: "
                     .concat(conta.toString()), e);
         }
     }

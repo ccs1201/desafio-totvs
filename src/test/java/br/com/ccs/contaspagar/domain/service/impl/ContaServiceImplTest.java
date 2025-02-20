@@ -1,11 +1,10 @@
 package br.com.ccs.contaspagar.domain.service.impl;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
-import br.com.ccs.contaspagar.infra.exception.ContasPagarNotFoundException;
-import br.com.ccs.contaspagar.infra.exception.ContasPagarServiceException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.repository.ContaRepository;
-import br.com.ccs.contaspagar.domain.vo.Situacao;
+import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
+import br.com.ccs.contaspagar.infra.exception.ContasPagarException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,17 +50,17 @@ class ContaServiceImplTest {
 
     /**
      * Test case for canceling a paid account.
-     * Verifies that attempting to cancel a paid account throws a ContasPagarServiceException.
+     * Verifies that attempting to cancel a paid account throws a ContasPagarException.
      */
     @Test
     void testCancelarContaPaga() {
         UUID id = UUID.randomUUID();
         Conta conta = new Conta();
-        conta.setSituacao(Situacao.PAGA);
+        conta.setSituacao(SituacaoEnum.PAGA);
 
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.cancelar(id));
+        assertThrows(ContasPagarException.class, () -> contaService.cancelar(id));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
@@ -74,7 +73,7 @@ class ContaServiceImplTest {
         UUID id = UUID.randomUUID();
         when(contaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.cancelar(id));
+        assertThrows(ContasPagarException.class, () -> contaService.cancelar(id));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
@@ -86,12 +85,12 @@ class ContaServiceImplTest {
     void testCancelarSaveFailure() {
         UUID id = UUID.randomUUID();
         Conta conta = new Conta();
-        conta.setSituacao(Situacao.PENDENTE);
+        conta.setSituacao(SituacaoEnum.PENDENTE);
 
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
         when(contaRepository.save(any(Conta.class))).thenThrow(new RuntimeException("Save failed"));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.cancelar(id));
+        assertThrows(ContasPagarException.class, () -> contaService.cancelar(id));
         verify(contaRepository, times(1)).findById(id);
         verify(contaRepository, times(1)).save(any(Conta.class));
     }
@@ -102,21 +101,21 @@ class ContaServiceImplTest {
      */
     @Test
     void testCancelarWithNullId() {
-        assertThrows(ContasPagarServiceException.class, () -> contaService.cancelar(null));
+        assertThrows(ContasPagarException.class, () -> contaService.cancelar(null));
         verify(contaRepository, never()).findById(any(UUID.class));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
     /**
      * Test case for listarTodas method when no accounts are found.
-     * Verifies that a ContasPagarNotFoundException is thrown with the correct message.
+     * Verifies that a ContasPagarException is thrown with the correct message.
      */
     @Test
     void testListarTodasWhenNoAccountsFound() {
         PageRequest pageRequest = PageRequest.of(0, 10);
         when(contaRepository.findAll(pageRequest)).thenReturn(new PageImpl<>(new ArrayList<>()));
 
-        var exception = assertThrows(ContasPagarNotFoundException.class,
+        var exception = assertThrows(ContasPagarException.class,
                 () -> contaService.listarTodas(pageRequest));
 
         assertEquals("Nenhuma conta encontrada.", exception.getMessage());
@@ -125,7 +124,7 @@ class ContaServiceImplTest {
 
     /**
      * Test case for pagar method when the account is already paid.
-     * This test verifies that a ContasPagarServiceException is thrown when
+     * This test verifies that a ContasPagarException is thrown when
      * attempting to pay an account that is already in PAGA (paid) status.
      */
     @Test
@@ -133,11 +132,11 @@ class ContaServiceImplTest {
         var id = UUID.randomUUID();
         LocalDate dataPagamento = LocalDate.now();
         var conta = new Conta();
-        conta.setSituacao(Situacao.PAGA);
+        conta.setSituacao(SituacaoEnum.PAGA);
 
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.pagar(id, dataPagamento));
+        assertThrows(ContasPagarException.class, () -> contaService.pagar(id, dataPagamento));
         verify(contaRepository).findById(id);
         verify(contaRepository, never()).save(any(Conta.class));
     }
@@ -152,7 +151,7 @@ class ContaServiceImplTest {
         var id = UUID.randomUUID();
         var dataPagamento = LocalDate.now();
         var conta = new Conta();
-        conta.setSituacao(Situacao.PENDENTE);
+        conta.setSituacao(SituacaoEnum.PENDENTE);
 
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
         when(contaRepository.save(any(Conta.class))).thenReturn(conta);
@@ -200,20 +199,20 @@ class ContaServiceImplTest {
 
     /**
      * Test case for totalPago method when the start date is after the end date.
-     * This test verifies that an IllegalArgumentException is thrown when the input dates are invalid.
+     * This test verifies that an ContasPagarException is thrown when the input dates are invalid.
      */
     @Test
     void testTotalPago_InvalidDateRange() {
         var dataInicio = LocalDate.of(2023, 12, 31);
         var dataFim = LocalDate.of(2023, 1, 1);
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.totalPago(dataInicio, dataFim));
+        assertThrows(ContasPagarException.class, () -> contaService.totalPago(dataInicio, dataFim));
         verify(contaRepository, never()).totalPago(dataInicio, dataFim);
     }
 
     /**
      * Test case for totalPago method when no accounts are found for the given period.
-     * This test verifies that a ContasPagarNotFoundException is thrown when the repository
+     * This test verifies that a ContasPagarException is thrown when the repository
      * returns an empty Optional.
      */
     @Test
@@ -223,47 +222,47 @@ class ContaServiceImplTest {
 
         when(contaRepository.totalPago(dataInicio, dataFim)).thenReturn(Optional.empty());
 
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.totalPago(dataInicio, dataFim));
+        assertThrows(ContasPagarException.class, () -> contaService.totalPago(dataInicio, dataFim));
         verify(contaRepository, times(1)).totalPago(dataInicio, dataFim);
     }
 
     /**
      * Test case for totalPago method when null dates are provided.
-     * This test verifies that a ContasPagarServiceException is thrown when either start or end date is null.
+     * This test verifies that a ContasPagarException is thrown when either start or end date is null.
      */
     @Test
     void testTotalPago_NullDates() {
-        assertThrows(ContasPagarServiceException.class, () -> contaService.totalPago(null, LocalDate.now()));
-        assertThrows(ContasPagarServiceException.class, () -> contaService.totalPago(LocalDate.now(), null));
+        assertThrows(ContasPagarException.class, () -> contaService.totalPago(null, LocalDate.now()));
+        assertThrows(ContasPagarException.class, () -> contaService.totalPago(LocalDate.now(), null));
         verify(contaRepository, never()).totalPago(any(LocalDate.class), any(LocalDate.class));
     }
 
     /**
      * Test case for buscarPorId method when the conta is not found.
-     * This test verifies that a ContasPagarNotFoundException is thrown when the repository returns an empty Optional.
+     * This test verifies that a ContasPagarException is thrown when the repository returns an empty Optional.
      */
     @Test
     void test_buscarPorId_contaNotFound() {
         var id = UUID.randomUUID();
         when(contaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.buscarPorId(id));
+        assertThrows(ContasPagarException.class, () -> contaService.buscarPorId(id));
         verify(contaRepository, times(1)).findById(id);
     }
 
     /**
      * Test case for buscarPorId method when the input ID is null.
-     * This test verifies that a ContasPagarServiceException is thrown when a null UUID is provided.
+     * This test verifies that a ContasPagarException is thrown when a null UUID is provided.
      */
     @Test
     void test_buscarPorId_withNullId() {
-        assertThrows(ContasPagarServiceException.class, () -> contaService.buscarPorId(null));
+        assertThrows(ContasPagarException.class, () -> contaService.buscarPorId(null));
         verify(contaRepository, never()).findById(any(UUID.class));
     }
 
     /**
      * Negative test case for findByVencimentoEDescricao when both dataVencimento and descricao are null.
-     * This should throw a ContasPagarServiceException.
+     * This should throw a ContasPagarException.
      */
     @Test
     void test_findByVencimentoEDescricao_bothParametersNull() {
@@ -271,7 +270,7 @@ class ContaServiceImplTest {
         String descricao = null;
         var pageRequest = PageRequest.of(0, 10);
 
-        assertThrows(ContasPagarServiceException.class, () ->
+        assertThrows(ContasPagarException.class, () ->
                 contaService.findByVencimentoEDescricao(dataVencimento, descricao, pageRequest)
         );
 
@@ -280,7 +279,7 @@ class ContaServiceImplTest {
 
     /**
      * Negative test case for findByVencimentoEDescricao when descricao is an empty string.
-     * This should be treated as a null descricao and throw a ContasPagarServiceException when dataVencimento is also null.
+     * This should be treated as a null descricao and throw a ContasPagarException when dataVencimento is also null.
      */
     @Test
     void test_findByVencimentoEDescricao_emptyDescricao() {
@@ -288,7 +287,7 @@ class ContaServiceImplTest {
         var descricao = "";
         var pageRequest = PageRequest.of(0, 10);
 
-        assertThrows(ContasPagarServiceException.class, () ->
+        assertThrows(ContasPagarException.class, () ->
                 contaService.findByVencimentoEDescricao(dataVencimento, descricao, pageRequest)
         );
 
@@ -313,15 +312,15 @@ class ContaServiceImplTest {
 
     /**
      * Test case for findByVencimentoEDescricao method when both dataVencimento and descricao are null.
-     * This should throw a ContasPagarServiceException.
+     * This should throw a ContasPagarException.
      */
     @Test
     void test_findByVencimentoEDescricao_throwsExceptionWhenBothParametersAreNull() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        assertThrows(ContasPagarServiceException.class, () -> {
-            contaService.findByVencimentoEDescricao(null, null, pageRequest);
-        });
+        assertThrows(ContasPagarException.class, () ->
+                contaService.findByVencimentoEDescricao(null, null, pageRequest)
+        );
         verifyNoInteractions(contaRepository);
     }
 
@@ -399,14 +398,14 @@ class ContaServiceImplTest {
     }
 
     /**
-     * Tests the scenario where no accounts are found, resulting in a ContasPagarNotFoundException.
+     * Tests the scenario where no accounts are found, resulting in a ContasPagarException.
      */
     @Test
     void test_listarTodas_emptyResult() {
         var pageRequest = PageRequest.of(0, 10);
         when(contaRepository.findAll(pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.listarTodas(pageRequest));
+        assertThrows(ContasPagarException.class, () -> contaService.listarTodas(pageRequest));
         verify(contaRepository, times(1)).findAll(pageRequest);
     }
 
@@ -417,7 +416,7 @@ class ContaServiceImplTest {
     void test_listarTodas_nullPageRequest() {
         when(contaRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
         PageRequest pageRequest = null;
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.listarTodas(pageRequest));
+        assertThrows(ContasPagarException.class, () -> contaService.listarTodas(pageRequest));
     }
 
     /**
@@ -439,16 +438,16 @@ class ContaServiceImplTest {
 
     /**
      * Test case for pagar method when the conta is already paid.
-     * This test verifies that the method throws a ContasPagarServiceException when trying to pay an already paid conta.
+     * This test verifies that the method throws a ContasPagarException when trying to pay an already paid conta.
      */
     @Test
     void test_pagar_conta_already_paid() {
         var id = UUID.randomUUID();
         var conta = new Conta();
-        conta.setSituacao(Situacao.PAGA);
+        conta.setSituacao(SituacaoEnum.PAGA);
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.pagar(id, LocalDate.now()));
+        assertThrows(ContasPagarException.class, () -> contaService.pagar(id, LocalDate.now()));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
@@ -461,35 +460,35 @@ class ContaServiceImplTest {
         var id = UUID.randomUUID();
         when(contaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ContasPagarNotFoundException.class, () -> contaService.pagar(id, LocalDate.now()));
+        assertThrows(ContasPagarException.class, () -> contaService.pagar(id, LocalDate.now()));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
     /**
      * Test case for pagar method when the input date is null.
-     * This test verifies that the method throws a ContasPagarServiceException when the date is null.
+     * This test verifies that the method throws a ContasPagarException when the date is null.
      */
     @Test
     void test_pagar_null_date() {
         var id = UUID.randomUUID();
         when(contaRepository.findById(id)).thenReturn(Optional.of(new Conta()));
-        assertThrows(ContasPagarServiceException.class, () -> contaService.pagar(id, null));
+        assertThrows(ContasPagarException.class, () -> contaService.pagar(id, null));
         verify(contaRepository, never()).save(any(Conta.class));
     }
 
     /**
      * Test case for pagar method when an exception occurs during saving.
-     * This test verifies that the method throws a ContasPagarServiceException when an error occurs while saving the conta.
+     * This test verifies that the method throws a ContasPagarException when an error occurs while saving the conta.
      */
     @Test
     void test_pagar_save_exception() {
         var id = UUID.randomUUID();
         var conta = new Conta();
-        conta.setSituacao(Situacao.PENDENTE);
+        conta.setSituacao(SituacaoEnum.PENDENTE);
         when(contaRepository.findById(id)).thenReturn(Optional.of(conta));
         when(contaRepository.save(any(Conta.class))).thenThrow(new RuntimeException("Database error"));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.pagar(id, LocalDate.now()));
+        assertThrows(ContasPagarException.class, () -> contaService.pagar(id, LocalDate.now()));
         verify(contaRepository, times(1)).save(any(Conta.class));
     }
 
@@ -503,7 +502,7 @@ class ContaServiceImplTest {
         var conta = new Conta();
         when(contaRepository.save(any(Conta.class))).thenThrow(new RuntimeException("Database error"));
 
-        assertThrows(ContasPagarServiceException.class, () -> contaService.salvar(conta));
+        assertThrows(ContasPagarException.class, () -> contaService.salvar(conta));
         verify(contaRepository, times(1)).save(any(Conta.class));
     }
 

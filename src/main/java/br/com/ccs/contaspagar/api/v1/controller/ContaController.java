@@ -33,32 +33,11 @@ import java.util.UUID;
 class ContaController {
     private final ContaService contaService;
 
-    @Operation(summary = "Criar uma conta")
+    @Operation(summary = "Cadastra uma conta")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContaOutput criarConta(@RequestBody @Valid ContaInput contaInput) {
+    public ContaOutput cadastrarConta(@RequestBody @Valid ContaInput contaInput) {
         return ContaOutput.fromEntity(contaService.salvar(contaInput.toConta()));
-    }
-
-    @Operation(summary = "Listar todas as contas")
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public Page<ContaOutput> listarContas(@RequestParam(defaultValue = "0") @PositiveOrZero int page,
-                                          @RequestParam(defaultValue = "5") @Positive int size,
-                                          @RequestParam(defaultValue = "dataVencimento") String sort,
-                                          @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
-        return ContaOutput
-                .fromPage(contaService
-                        .listarTodas(PageRequest
-                                .of(page, size, direction, sort)));
-
-    }
-
-    @Operation(summary = "Buscar conta por id")
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ContaOutput buscarConta(@PathVariable @NotNull UUID id) {
-        return ContaOutput.fromEntity(contaService.buscarPorId(id));
     }
 
     @Operation(summary = "Atualizar conta")
@@ -82,6 +61,27 @@ class ContaController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelarConta(@PathVariable @NotNull UUID id) {
         contaService.cancelar(id);
+    }
+
+    @Operation(summary = "Listar todas as contas")
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Page<ContaOutput> listarContas(@RequestParam(defaultValue = "0") @PositiveOrZero int page,
+                                          @RequestParam(defaultValue = "5") @Positive int size,
+                                          @RequestParam(defaultValue = "dataVencimento") String sort,
+                                          @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
+        return ContaOutput
+                .fromPage(contaService
+                        .listarTodas(PageRequest
+                                .of(page, size, direction, sort)));
+
+    }
+
+    @Operation(summary = "Buscar conta por id")
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaOutput buscarConta(@PathVariable @NotNull UUID id) {
+        return ContaOutput.fromEntity(contaService.buscarPorId(id));
     }
 
 
