@@ -1,4 +1,4 @@
-package br.com.ccs.contaspagar.domain.core.config.openapi;
+package br.com.ccs.contaspagar.infra.config.openapi;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

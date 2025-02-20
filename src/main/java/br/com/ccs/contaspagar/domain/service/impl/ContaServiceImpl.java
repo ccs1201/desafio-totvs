@@ -1,8 +1,8 @@
 package br.com.ccs.contaspagar.domain.service.impl;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
-import br.com.ccs.contaspagar.domain.core.exception.ContasPagarNotFoundException;
-import br.com.ccs.contaspagar.domain.core.exception.ContasPagarServiceException;
+import br.com.ccs.contaspagar.infra.exception.ContasPagarNotFoundException;
+import br.com.ccs.contaspagar.infra.exception.ContasPagarServiceException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.repository.ContaRepository;
 import br.com.ccs.contaspagar.domain.service.ContaService;

@@ -1,4 +1,4 @@
-package br.com.ccs.contaspagar.domain.core.exception;
+package br.com.ccs.contaspagar.infra.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

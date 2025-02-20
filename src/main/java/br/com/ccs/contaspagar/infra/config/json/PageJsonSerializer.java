@@ -1,4 +1,4 @@
-package br.com.ccs.contaspagar.domain.core.config.json;
+package br.com.ccs.contaspagar.infra.config.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

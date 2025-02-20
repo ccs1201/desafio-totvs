@@ -1,7 +1,7 @@
 package br.com.ccs.contaspagar.domain.util;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
-import br.com.ccs.contaspagar.domain.core.exception.CsvReaderException;
+import br.com.ccs.contaspagar.infra.exception.CsvReaderException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.vo.Situacao;
 import org.junit.jupiter.api.Test;

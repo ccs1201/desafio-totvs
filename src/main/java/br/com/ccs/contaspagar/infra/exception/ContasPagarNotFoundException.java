@@ -1,4 +1,4 @@
-package br.com.ccs.contaspagar.domain.core.exception;
+package br.com.ccs.contaspagar.infra.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
