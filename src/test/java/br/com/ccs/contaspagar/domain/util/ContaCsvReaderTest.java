@@ -96,4 +96,15 @@ class ContaCsvReaderTest {
         assertEquals(Situacao.PENDENTE, conta2.getSituacao());
     }
 
+    @Test
+    void testQuandoCsvInputIsNull() {
+        assertThrows(CsvReaderException.class, () -> ContaCsvReader.readCsv(null));
+    }
+
+    @Test
+    void testQuandoCsvInputNaoTemArquivo() {
+        var input = new CsvInput(null);
+        assertThrows(CsvReaderException.class, () -> ContaCsvReader.readCsv(input));
+    }
+
 }

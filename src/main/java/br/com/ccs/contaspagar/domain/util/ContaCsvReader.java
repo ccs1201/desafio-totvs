@@ -22,7 +22,7 @@ public class ContaCsvReader {
 
     public List<Conta> readCsv(CsvInput csvInput) {
 
-        if (isNull(csvInput.multipartFile()) || csvInput.multipartFile().isEmpty()) {
+        if (isNull(csvInput) || isNull(csvInput.multipartFile()) || csvInput.multipartFile().isEmpty()) {
             throw new CsvReaderException("O arquivo está vazio.");
         }
         try (BufferedReader reader = new BufferedReader(
