@@ -7,9 +7,11 @@ import br.com.ccs.contaspagar.domain.service.ContaService;
 import br.com.ccs.contaspagar.domain.util.ContaCsvReader;
 import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
 import br.com.ccs.contaspagar.infra.exception.ContasPagarException;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,6 +103,7 @@ public class ContaServiceImpl implements ContaService {
         throw new ContasPagarException(BAD_REQUEST, "Informe ao menos um dos parâmetros: Data Vencimento ou Descrição ");
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BigDecimal totalPago(LocalDate dataInicio, LocalDate dataFim) {
 
@@ -123,6 +126,7 @@ public class ContaServiceImpl implements ContaService {
         return contaRepository.saveAll(ContaCsvReader.readCsv(csvInput));
     }
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     private Conta findById(UUID id) {
         if (isNull(id)) {
             throw new ContasPagarException(BAD_REQUEST, "Id não pode ser nulo.");
