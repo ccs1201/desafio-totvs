@@ -1,6 +1,6 @@
 package br.com.ccs.contaspagar.infra.config.security;
 
-import br.com.ccs.contaspagar.domain.repository.UserRepository;
+import br.com.ccs.contaspagar.domain.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import static java.util.Objects.nonNull;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
         if (nonNull(username) && isNull(SecurityContextHolder.getContext().getAuthentication())) {
-            UserDetails userDetails = userRepository.findByLogin(username).orElse(null);
+            UserDetails userDetails = usuarioRepository.findByLogin(username).orElse(null);
             if (nonNull(userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
