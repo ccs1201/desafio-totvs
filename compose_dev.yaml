@@ -3,7 +3,7 @@ name: 'postgres_db'
 services:
   #Data Base
   postgres:
-    image: postgres:latest
+    image: postgres:16.7
     restart: no
     environment:
       - POSTGRES_DB=desafio_totvs
