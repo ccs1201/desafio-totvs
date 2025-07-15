@@ -1,9 +1,9 @@
 package br.com.ccs.contaspagar.domain.util;
 
 import br.com.ccs.contaspagar.api.v1.model.input.CsvInput;
-import br.com.ccs.contaspagar.infra.exception.CsvReaderException;
 import br.com.ccs.contaspagar.domain.entity.Conta;
 import br.com.ccs.contaspagar.domain.vo.SituacaoEnum;
+import br.com.ccs.contaspagar.infra.exception.CsvReaderException;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class ContaCsvReaderTest {
 
     @Test
-    void test_readCsv_emptyFile() {
+    void testReadCsvEmptyFile() {
         MultipartFile emptyFile = new MockMultipartFile("empty.csv", "".getBytes());
         var input = new CsvInput(emptyFile);
         assertThrows(CsvReaderException.class, () -> ContaCsvReader.readCsv(input));
     }
 
     @Test
-    void test_readCsv_invalidDateFormat() {
+    void testReadCsvInvalidDateFormat() {
         String content = "01-05-2023,,1000.00,Descrição,PENDENTE\n"; // Incorrect date format
         MultipartFile invalidFile = new MockMultipartFile("invalid.csv", content.getBytes(StandardCharsets.UTF_8));
         var input = new CsvInput(invalidFile);
@@ -34,7 +34,7 @@ class ContaCsvReaderTest {
     }
 
     @Test
-    void test_readCsv_invalidFieldCount() {
+    void testReadCsvInvalidFieldCount() {
         String content = "2023-05-01,1000.00,Descrição,PENDENTE\n"; // Missing dataPagamento field
         MultipartFile invalidFile = new MockMultipartFile("invalid.csv", content.getBytes(StandardCharsets.UTF_8));
         var input = new CsvInput(invalidFile);
@@ -42,7 +42,7 @@ class ContaCsvReaderTest {
     }
 
     @Test
-    void test_readCsv_invalidSituacao() {
+    void testReadCsvInvalidSituacao() {
         String content = "2023-05-01,,1000.00,Descrição,INVALID_STATUS\n"; // Invalid situacao
         MultipartFile invalidFile = new MockMultipartFile("invalid.csv", content.getBytes(StandardCharsets.UTF_8));
         var input = new CsvInput(invalidFile);
@@ -50,7 +50,7 @@ class ContaCsvReaderTest {
     }
 
     @Test
-    void test_readCsv_invalidValorFormat() {
+    void testReadCsvInvalidValorFormat() {
         String content = "2023-05-01,,abc,Descrição,PENDENTE\n"; // Invalid valor
         MultipartFile invalidFile = new MockMultipartFile("invalid.csv", content.getBytes(StandardCharsets.UTF_8));
         var input = new CsvInput(invalidFile);
@@ -58,7 +58,7 @@ class ContaCsvReaderTest {
     }
 
     @Test
-    void test_readCsv_ioException() {
+    void testReadCsvIoException() {
         MultipartFile errorFile = new MockMultipartFile("error.csv", "test".getBytes()) {
             @Override
             public java.io.InputStream getInputStream() throws IOException {
@@ -71,7 +71,7 @@ class ContaCsvReaderTest {
     }
 
     @Test
-    void test_readCsv_withValidMultipleLines() {
+    void testReadCsvWithValidMultipleLines() {
         String csvContent = "2023-05-01,2023-05-01,100.50,Conta de luz,PAGA\n" +
                 "2023-06-01,,200.75,Aluguel,PENDENTE";
         MultipartFile file = new MockMultipartFile("test.csv", csvContent.getBytes(StandardCharsets.UTF_8));

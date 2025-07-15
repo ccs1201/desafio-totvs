@@ -1,8 +1,8 @@
 package br.com.ccs.contaspagar.domain.service.impl;
 
 import br.com.ccs.contaspagar.domain.entity.Usuario;
-import br.com.ccs.contaspagar.domain.repository.UserRepository;
-import br.com.ccs.contaspagar.domain.service.UserService;
+import br.com.ccs.contaspagar.domain.repository.UsuarioRepository;
+import br.com.ccs.contaspagar.domain.service.UsuarioService;
 import br.com.ccs.contaspagar.infra.exception.ContasPagarException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UsuarioServiceImpl implements UsuarioService {
 
-    private final UserRepository repository;
+    private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void save(Usuario usuario) {
+    public void cadastrar(Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         try {
             repository.save(usuario);

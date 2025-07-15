@@ -16,6 +16,7 @@ public record ContaInput(
         @Positive(message = "Deve ser maior que zero") @NotNull(message = "Não pode estar vazio") BigDecimal valor,
         @NotBlank(message = "Não pode estar vazio") String descricao,
         @NotNull(message = "Não pode estar vazio") SituacaoEnum situacao) {
+
     public Conta toConta() {
         return Conta.builder()
                 .dataVencimento(dataVencimento)

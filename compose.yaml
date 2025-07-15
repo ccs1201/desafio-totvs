@@ -22,10 +22,10 @@ services:
 
 #backend
   contas-pagar-backend:
-    image: contas-pagar-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
+    image: contas-pagar-backend:latest
     ports:
       - "8080:8080"
     deploy:
