@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ContaspagarApplication {
+public class ContasPagarApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ContaspagarApplication.class, args);
+        SpringApplication.run(ContasPagarApplication.class, args);
     }
 
 }

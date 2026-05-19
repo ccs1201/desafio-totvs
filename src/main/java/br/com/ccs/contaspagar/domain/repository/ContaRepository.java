@@ -21,7 +21,7 @@ public interface ContaRepository extends JpaRepository<Conta, UUID> {
 
     Page<Conta> findByDescricaoContainingIgnoreCase(String descricao,Pageable pageable);
 
-    @Query(value = "SELECT sum(c.valor) FROM Conta c WHERE c.dataPagamento BETWEEN :dataInicio AND :dataFim")
+    @Query(value = "SELECT sum(c.valor) FROM Conta c WHERE c.dataPagamento BETWEEN :dataInicio AND :dataFim and c.situacao = 'PAGA'")
     Optional<BigDecimal> totalPago(LocalDate dataInicio, LocalDate dataFim);
 }
 
